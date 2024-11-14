@@ -65,8 +65,13 @@ class TuringMachine:
         self.pilha_direita.push(simbolo_atual)
         return self.pilha_esquerda.pop() if not self.pilha_esquerda.eh_vazio() else self.SIMBOLO_VAZIO
     
+    def executar(self):
+        pass
+    
     def __str__(self):
         return f"Esquerda: {self.pilha_esquerda}, Direita: {self.pilha_direita}, Estado Atual: {self.estado_atual}"
+    
+
 
 
 """
