@@ -1,0 +1,51 @@
+Informe os estados (separados por vírgula): q1,q2,q3,q4,q5,q_accept,q_reject
+Informe o alfabeto (separados por vírgula): 0,1
+Informe as transições no formato 'prox_estado,novo_simbolo,direcao' (ex: 'q1,1,D'). Use '_' para manter o mesmo símbolo:
+D(q1,0): q2,#,D
+D(q1,1):
+D(q1,#): q_reject,_,D
+D(q1,x): q_reject,_,D
+D(q2,0): q3,x,D
+D(q2,1):
+D(q2,#): q_accept,_,D
+D(q2,x): q2,_,D
+D(q3,0): q4,_,D
+D(q3,1):
+D(q3,#): q5,_,E
+D(q3,x): q3,_,D
+D(q4,0): q3,x,D
+D(q4,1):
+D(q4,#): q_reject,_,D
+D(q4,x): q4,_,D
+D(q5,0): q5,_,E
+D(q5,1):
+D(q5,#): q2,_,D
+D(q5,x): q5,_,E
+D(q_accept,0):
+D(q_accept,1):
+D(q_accept,#):
+D(q_accept,x):
+D(q_reject,0):
+D(q_reject,1):
+D(q_reject,#):
+D(q_reject,x):
+Informe o estado inicial: q1
+Informe o(s) estado(s) de aceitação (separados por vírgula): q_accept
+Informe a palavra a ser verificada: 0000
+
+Transições da Máquina de Turing:
+D(q1, 0) -> (q2, #, D)
+D(q1, #) -> (q_reject, #, D)
+D(q1, x) -> (q_reject, x, D)
+D(q2, 0) -> (q3, x, D)
+D(q2, #) -> (q_accept, #, D)
+D(q2, x) -> (q2, x, D)
+D(q3, 0) -> (q4, 0, D)
+D(q3, #) -> (q5, #, E)
+D(q3, x) -> (q3, x, D)
+D(q4, 0) -> (q3, x, D)
+D(q4, #) -> (q_reject, #, D)
+D(q4, x) -> (q4, x, D)
+D(q5, 0) -> (q5, 0, E)
+D(q5, #) -> (q2, #, D)
+D(q5, x) -> (q5, x, E)

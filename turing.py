@@ -28,7 +28,7 @@ class TuringMachine:
 
     def __init__(self, estados=None, alfabeto=None, transicoes=None, estado_inicial=None, estados_de_aceitacao=None):
         self.estados = estados
-        self.alfabeto = alfabeto
+        self.alfabeto = alfabeto if alfabeto is not None else []
         self.transicoes = transicoes if transicoes is not None else {}
         self.estado_inicial = estado_inicial
         self.estados_de_aceitacao = estados_de_aceitacao
@@ -41,16 +41,23 @@ class TuringMachine:
     def ler_entradas_usuario(self):
         self.estados = input("Informe os estados (separados por vírgula): ").split(",")
         self.alfabeto = input("Informe o alfabeto (separados por vírgula): ").split(",")
-        self.alfabeto.append(self.SIMBOLO_VAZIO)
+        self.alfabeto.append(self.SIMBOLO_VAZIO)  # Adiciona o símbolo vazio ao alfabeto
         self.transicoes = {}
+        
+        self.alfabeto.append('x')
 
-        print("Informe as transições no formato 'prox_estado,novo_simbolo,direcao' (ex: 'q1,1,D'):")
+        print("Informe as transições no formato 'prox_estado,novo_simbolo,direcao' (ex: 'q1,1,D'). Use '_' para manter o mesmo símbolo:")
         for estado in self.estados:
             for simbolo in self.alfabeto:
                 entrada = input(f"D({estado},{simbolo}): ").strip()
                 if entrada:  # Apenas adiciona a transição se houver entrada
                     try:
                         prox_estado, novo_simbolo, direcao = entrada.split(',')
+                        
+                        # Substituir '_' pelo próprio símbolo para manter o mesmo símbolo na fita
+                        #if novo_simbolo == '_':
+                        #    novo_simbolo = simbolo
+
                         self.transicoes[(estado, simbolo)] = (prox_estado, novo_simbolo, direcao)
                     except ValueError:
                         print(f"Erro: Transição inválida para D({estado},{simbolo}). Ignorada.")
@@ -60,7 +67,7 @@ class TuringMachine:
 
         self.estado_inicial = input("Informe o estado inicial: ").strip()
         self.estados_de_aceitacao = input("Informe o(s) estado(s) de aceitação (separados por vírgula): ").split(",")
-        self.palavra = list(input("Informe a palavra a ser verificada: ")) # Solicita  a palavra para ser verifiacada na maquina de turing
+        self.palavra = list(input("Informe a palavra a ser verificada: "))  # Solicita a palavra para verificação
         self.coloca_palavra_pilha()
 
     def mover_direita(self, simbolo_atual):
@@ -79,6 +86,10 @@ class TuringMachine:
         print("\nTransições da Máquina de Turing:")
         for (estado, simbolo), (prox_estado, novo_simbolo, direcao) in self.transicoes.items():
             print(f"D({estado}, {simbolo}) -> ({prox_estado}, {novo_simbolo}, {direcao})")
+    
+    def imprimir_alfabeto(self):
+        print("\nAlfabeto da Máquina de Turing:")
+        print(", ".join(self.alfabeto))
         
     def ler_fita(self):
         # Obter o símbolo
@@ -120,6 +131,8 @@ turing = TuringMachine()
 turing.ler_entradas_usuario()
 
 turing.imprimir_transicoes()
+
+turing.imprimir_alfabeto()
 
 # implementar o x nas transicoes
 
