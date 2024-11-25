@@ -102,7 +102,7 @@ class TuringMachine:
                     self.simbolo_atual = self.pilha[self.indice_atual_pilha]
 
     def __str__(self):
-        return f"Pilha: {self.pilha}"
+        return f"Simbolo atual: {self.simbolo_atual}, Pilha: {self.pilha}"
 
 turing = TuringMachine()
 
