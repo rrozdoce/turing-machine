@@ -52,14 +52,15 @@ class TuringMachine:
     def coloca_palavra_pilha(self):
         for letra in self.palavra:
             self.pilha.append(letra)
-
         self.pilha.append('L|')
 
+    # para imprimir as transicoes(debugg)
     def imprimir_transicoes(self): 
         print("\nTransições da Máquina de Turing:")
         for transicao in self.transicoes.items():
             print(transicao)
     
+    # para imprimir o alfabeto(debugg)
     def imprimir_alfabeto(self):
         print("\nAlfabeto da Máquina de Turing:")
         print(", ".join(self.alfabeto))
@@ -108,9 +109,6 @@ turing = TuringMachine()
 
 turing.ler_entradas_usuario()
 
-#turing.imprimir_transicoes()
-
-#turing.imprimir_alfabeto()
 print('\nFita da maquina de turing: ')
 
 resposta = turing.ler_fita()
