@@ -75,25 +75,29 @@ class TuringMachine:
         for letra in self.palavra:
             self.pilha.append(letra)
         self.pilha.append('L|') # 'L|' simboliza o fim da fita
-        
+    
+    def mover_direita(self):
+            if self.indice_atual_pilha + 1 < len(self.pilha):
+                self.pilha[self.indice_atual_pilha] = self.simbolo_atual
+                self.indice_atual_pilha = self.indice_atual_pilha + 1 # vai para direita do array
+                self.simbolo_atual = self.pilha[self.indice_atual_pilha] # proximo simbolo da palavra
 
-    # para imprimir as transicoes(debugg)
-    def imprimir_transicoes(self): 
-        print("\nTransições da Máquina de Turing:")
-        for transicao in self.transicoes.items():
-            print(transicao)
-    
-    # para imprimir o alfabeto(debugg)
-    def imprimir_alfabeto(self):
-        print("\nAlfabeto da Máquina de Turing:")
-        print(", ".join(self.alfabeto))
-    
+    def mover_esquerda(self):
+            if self.indice_atual_pilha - 1 >= 0:
+                self.pilha[self.indice_atual_pilha] = self.simbolo_atual
+                self.indice_atual_pilha = self.indice_atual_pilha - 1 # vai para esquerda do array
+                self.simbolo_atual = self.pilha[self.indice_atual_pilha] # proximo simbolo da palavra
+
     def ler_fita(self) -> bool:
         # Lê o primeiro símbolo antes do loop
         self.simbolo_atual = self.pilha[0]
         self.estado_atual = self.estado_inicial
 
         while True:
+                
+                if self.indice_atual_pilha < 0 or self.indice_atual_pilha >= len(self.pilha):
+                    return False # Máquina rejeita a palavra
+
                 # Verifica se o estado atual é de aceitação
                 if self.estado_atual in self.estados_de_aceitacao:
                     # Máquina aceitou a entrada!
@@ -113,17 +117,12 @@ class TuringMachine:
                 self.estado_atual = prox_estado # seta o estado atual como o proximo estado
                 if novo_simbolo != '_':
                    self.simbolo_atual = novo_simbolo
-
+            
                 if direcao == 'D':
-                    if self.indice_atual_pilha + 1 < len(self.pilha):
-                       self.pilha[self.indice_atual_pilha] = self.simbolo_atual
-                       self.indice_atual_pilha = self.indice_atual_pilha + 1 # vai para direita do array
-                       self.simbolo_atual = self.pilha[self.indice_atual_pilha] # proximo simbolo da palavra
+                    self.mover_direita()
                 elif direcao == 'E':
-                    if self.indice_atual_pilha - 1 >= 0:
-                       self.pilha[self.indice_atual_pilha] = self.simbolo_atual
-                       self.indice_atual_pilha = self.indice_atual_pilha - 1 # vai para esquerda do array
-                       self.simbolo_atual = self.pilha[self.indice_atual_pilha]
+                    self.mover_esquerda()
+
     
     def __str__(self):
         return f"Simbolo atual: {self.simbolo_atual}, Pilha: {self.pilha}"
