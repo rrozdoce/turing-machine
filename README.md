@@ -8,9 +8,7 @@ This project is based on the theoretical foundations presented in *Introduction 
 - [Objectives](#objectives)
 - [Theoretical Background](#theoretical-background)
 - [Implementation Details](#implementation-details)
-- [Usage Instructions](#usage-instructions)
-- [Testing and Results](#testing-and-results)
-- [Conclusion](#conclusion)
+- [Code Structure](#code-structure)
 
 ## Introduction
 In Michael Sipser’s text, the Turing Machine is introduced as a core model for understanding computation. This project aims to implement a simulator for a Turing Machine that adheres to the formal definitions, capturing the machine’s components—states, tape, and transitions—and demonstrating how they work together to perform computations.
