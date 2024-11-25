@@ -1,131 +1,122 @@
-# implementação da máquina de turing
-# entrada: estados, alfabeto, transicoes, estado_inicial, estados_de_aceitação 
-# entrega: 25/11/2024
-# Nome: Felipe Echeverria Vilhalva RGM: 45611
-
-
 class TuringMachine:
-    def __init__(self, estados=None, alfabeto=None, transicoes=None, estado_inicial=None, estados_de_aceitacao=None):
-        self.estados = estados
-        self.alfabeto = alfabeto if alfabeto is not None else []
-        self.transicoes = transicoes if transicoes is not None else {}
-        self.estado_inicial = estado_inicial
-        self.estados_de_aceitacao = estados_de_aceitacao
-        self.pilha = []  # Pilha para os símbolos da cabeça
-        self.indice_atual_pilha = 0
-        self.tamanho_pilha = 0
-        self.estado_atual = self.estado_inicial
-        self.simbolo_atual = None
-        self.palavra = None
+    def __init__(self, states=None, alphabet=None, transitions=None, initial_state=None, acceptance_states=None):
+        self.states = states
+        self.alphabet = alphabet if alphabet is not None else []
+        self.transitions = transitions if transitions is not None else {}
+        self.initial_state = initial_state
+        self.acceptance_states = acceptance_states
+        self.tape = []  # Tape symbols for the machine's head
+        self.current_tape_index = 0
+        self.tape_length = 0
+        self.current_state = self.initial_state
+        self.current_symbol = None
+        self.input_word = None
     
     def main(self):
-        self.ler_entradas_usuario()
-        opcao = 'SIM'
-        while opcao != 'NAO':
+        self.read_user_inputs()
+        option = 'YES'
+        while option != 'NO':
             print("\n")
-            self.resetar()
-            self.palavra = list(input("Informe a palavra a ser verificada: "))  # Solicita a palavra para verificação
-            self.coloca_palavra_pilha()
+            self.reset()
+            self.input_word = list(input("Enter the word to be verified: "))  # Get the word for verification
+            self.write_word_to_tape()
 
-            print('\nFita da maquina de turing: ')
-            resposta = self.ler_fita()
+            print('\nTuring Machine tape: ')
+            response = self.read_tape()
 
-            if resposta:
-                print(f"A maquina de turing aceitou a palavra {''.join(self.palavra)}")
+            if response:
+                print(f"The Turing machine accepted the word {''.join(self.input_word)}")
             else:
-                print(f"A maquina de turing rejeitou a palavra {''.join(self.palavra)}")
+                print(f"The Turing machine rejected the word {''.join(self.input_word)}")
             
-            opcao = input('Deseja realizar mais testes a mesma MT(SIM OU NAO)?')
+            option = input('Do you want to test more words on the same TM (YES or NO)?')
         
-    
-    def getPalavra(self):
-        return self.palavra
+    def get_word(self):
+        return self.input_word
 
-    def ler_entradas_usuario(self):
-        self.estados = input("Informe os estados (separados por vírgula): ").split(",")
-        self.alfabeto = input("Informe o alfabeto (separados por vírgula): ").split(",")
-        self.transicoes = {}
+    def read_user_inputs(self):
+        self.states = input("Enter the states (comma-separated): ").split(",")
+        self.alphabet = input("Enter the alphabet (comma-separated): ").split(",")
+        self.transitions = {}
 
-        print("Informe as transições no formato 'prox_estado,novo_simbolo,direcao' (ex: 'q1,1,D'). Use '_' para manter o mesmo símbolo:")
-        for estado in self.estados:
-            for simbolo in self.alfabeto:
-                entrada = input(f"D({estado},{simbolo}): ").strip()
-                if entrada:  # Apenas adiciona a transição se houver entrada
+        print("Enter the transitions in the format 'next_state,new_symbol,direction' (e.g., 'q1,1,R'). Use '_' to keep the same symbol:")
+        for state in self.states:
+            for symbol in self.alphabet:
+                entry = input(f"D({state},{symbol}): ").strip()
+                if entry:  # Add transition only if input is provided
                     try:
-                        prox_estado, novo_simbolo, direcao = entrada.split(',')
-                        self.transicoes[(estado, simbolo)] = (prox_estado, novo_simbolo, direcao)
+                        next_state, new_symbol, direction = entry.split(',')
+                        self.transitions[(state, symbol)] = (next_state, new_symbol, direction)
                     except ValueError:
-                        print(f"Erro: Transição inválida para D({estado},{simbolo}). Ignorada.")
+                        print(f"Error: Invalid transition for D({state},{symbol}). Ignored.")
                 else:
-                    # Transições vazias não são registradas
+                    # Empty transitions are not recorded
                     continue
 
-        self.estado_inicial = input("Informe o estado inicial: ").strip()
-        self.estados_de_aceitacao = input("Informe o(s) estado(s) de aceitação (separados por vírgula): ").split(",")
+        self.initial_state = input("Enter the initial state: ").strip()
+        self.acceptance_states = input("Enter the acceptance state(s) (comma-separated): ").split(",")
 
-    def resetar(self):
-        self.pilha = []  # Pilha para os símbolos da cabeça
-        self.indice_atual_pilha = 0
-        self.tamanho_pilha = 0
-        self.estado_atual = self.estado_inicial
-        self.simbolo_atual = None
-        self.palavra = None
+    def reset(self):
+        self.tape = []  # Tape symbols for the machine's head
+        self.current_tape_index = 0
+        self.tape_length = 0
+        self.current_state = self.initial_state
+        self.current_symbol = None
+        self.input_word = None
     
-    def coloca_palavra_pilha(self):
-        for letra in self.palavra:
-            self.pilha.append(letra)
-        self.pilha.append('L|') # 'L|' simboliza o fim da fita
+    def write_word_to_tape(self):
+        for letter in self.input_word:
+            self.tape.append(letter)
+        self.tape.append('L|')  # 'L|' represents the end of the tape
     
-    def mover_direita(self):
-            if self.indice_atual_pilha + 1 < len(self.pilha):
-                self.pilha[self.indice_atual_pilha] = self.simbolo_atual
-                self.indice_atual_pilha = self.indice_atual_pilha + 1 # vai para direita do array
-                self.simbolo_atual = self.pilha[self.indice_atual_pilha] # proximo simbolo da palavra
+    def move_right(self):
+        if self.current_tape_index + 1 < len(self.tape):
+            self.tape[self.current_tape_index] = self.current_symbol
+            self.current_tape_index += 1  # Move to the right
+            self.current_symbol = self.tape[self.current_tape_index]  # Update to the next symbol
 
-    def mover_esquerda(self):
-            if self.indice_atual_pilha - 1 >= 0:
-                self.pilha[self.indice_atual_pilha] = self.simbolo_atual
-                self.indice_atual_pilha = self.indice_atual_pilha - 1 # vai para esquerda do array
-                self.simbolo_atual = self.pilha[self.indice_atual_pilha] # proximo simbolo da palavra
+    def move_left(self):
+        if self.current_tape_index - 1 >= 0:
+            self.tape[self.current_tape_index] = self.current_symbol
+            self.current_tape_index -= 1  # Move to the left
+            self.current_symbol = self.tape[self.current_tape_index]  # Update to the next symbol
 
-    def ler_fita(self) -> bool:
-        # Lê o primeiro símbolo antes do loop
-        self.simbolo_atual = self.pilha[0]
-        self.estado_atual = self.estado_inicial
+    def read_tape(self) -> bool:
+        # Read the first symbol before starting the loop
+        self.current_symbol = self.tape[0]
+        self.current_state = self.initial_state
 
         while True:
-                
-                if self.indice_atual_pilha < 0 or self.indice_atual_pilha >= len(self.pilha):
-                    return False # Máquina rejeita a palavra
+            if self.current_tape_index < 0 or self.current_tape_index >= len(self.tape):
+                return False  # Machine rejects the word
 
-                # Verifica se o estado atual é de aceitação
-                if self.estado_atual in self.estados_de_aceitacao:
-                    # Máquina aceitou a entrada!
-                    return True
+            # Check if the current state is an acceptance state
+            if self.current_state in self.acceptance_states:
+                # Machine accepted the input!
+                return True
 
-                # Verifica se há transição válida
-                if (self.estado_atual, self.simbolo_atual) not in self.transicoes:
-                    # Máquina rejeitou a entrada! Não há transição válida.
-                    return False
+            # Check for a valid transition
+            if (self.current_state, self.current_symbol) not in self.transitions:
+                # Machine rejects the input! No valid transition.
+                return False
 
-                # Executa a transição
-                prox_estado, novo_simbolo, direcao = self.transicoes[(self.estado_atual, self.simbolo_atual)]
-                print(f"Transição: ({self.estado_atual}, {self.simbolo_atual}) => {prox_estado}, {novo_simbolo}, {direcao}")
-                print(f"{self}")
-                print()
+            # Execute the transition
+            next_state, new_symbol, direction = self.transitions[(self.current_state, self.current_symbol)]
+            print(f"Transition: ({self.current_state}, {self.current_symbol}) => {next_state}, {new_symbol}, {direction}")
+            print(f"{self}")
+            print()
             
-                self.estado_atual = prox_estado # seta o estado atual como o proximo estado
-                if novo_simbolo != '_':
-                   self.simbolo_atual = novo_simbolo
+            self.current_state = next_state  # Update to the next state
+            if new_symbol != '_':
+                self.current_symbol = new_symbol
             
-                if direcao == 'D':
-                    self.mover_direita()
-                elif direcao == 'E':
-                    self.mover_esquerda()
+            if direction == 'R':
+                self.move_right()
+            elif direction == 'L':
+                self.move_left()
 
-    
     def __str__(self):
-        return f"Simbolo atual: {self.simbolo_atual}, Pilha: {self.pilha}"
+        return f"Current symbol: {self.current_symbol}, Tape: {"".join(map(str, self.tape))}"
 
 turing = TuringMachine()
 turing.main()
