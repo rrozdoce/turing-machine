@@ -3,9 +3,8 @@
 # entrega: 25/11/2024
 # Nome: Felipe Echeverria Vilhalva RGM: 45611
 
-class TuringMachine:
-    SIMBOLO_CERQUILHA = '#'
 
+class TuringMachine:
     def __init__(self, estados=None, alfabeto=None, transicoes=None, estado_inicial=None, estados_de_aceitacao=None):
         self.estados = estados
         self.alfabeto = alfabeto if alfabeto is not None else []
@@ -19,15 +18,32 @@ class TuringMachine:
         self.simbolo_atual = None
         self.palavra = None
     
+    def main(self):
+        self.ler_entradas_usuario()
+        opcao = 'SIM'
+        while opcao != 'NAO':
+            print("\n")
+            self.resetar()
+            self.palavra = list(input("Informe a palavra a ser verificada: "))  # Solicita a palavra para verificação
+            self.coloca_palavra_pilha()
+
+            print('\nFita da maquina de turing: ')
+            resposta = self.ler_fita()
+
+            if resposta:
+                print(f"A maquina de turing aceitou a palavra {''.join(self.palavra)}")
+            else:
+                print(f"A maquina de turing rejeitou a palavra {''.join(self.palavra)}")
+            
+            opcao = input('Deseja realizar mais testes a mesma MT(SIM OU NAO)?')
+        
+    
     def getPalavra(self):
         return self.palavra
 
     def ler_entradas_usuario(self):
         self.estados = input("Informe os estados (separados por vírgula): ").split(",")
         self.alfabeto = input("Informe o alfabeto (separados por vírgula): ").split(",")
-        self.alfabeto.append(self.SIMBOLO_CERQUILHA)  # Adiciona o símbolo da cerquilha ao alfabeto
-        self.alfabeto.append('x') # adiciona o x no alfabeto(para verificar transicoes com ele)
-        self.alfabeto.append('L|') # adiciona o simbolo L|(fim ou inicio da fita) no alfabeto(para verificar transicoes com ele)
         self.transicoes = {}
 
         print("Informe as transições no formato 'prox_estado,novo_simbolo,direcao' (ex: 'q1,1,D'). Use '_' para manter o mesmo símbolo:")
@@ -46,13 +62,20 @@ class TuringMachine:
 
         self.estado_inicial = input("Informe o estado inicial: ").strip()
         self.estados_de_aceitacao = input("Informe o(s) estado(s) de aceitação (separados por vírgula): ").split(",")
-        self.palavra = list(input("Informe a palavra a ser verificada: "))  # Solicita a palavra para verificação
-        self.coloca_palavra_pilha()
+
+    def resetar(self):
+        self.pilha = []  # Pilha para os símbolos da cabeça
+        self.indice_atual_pilha = 0
+        self.tamanho_pilha = 0
+        self.estado_atual = self.estado_inicial
+        self.simbolo_atual = None
+        self.palavra = None
     
     def coloca_palavra_pilha(self):
         for letra in self.palavra:
             self.pilha.append(letra)
-        self.pilha.append('L|')
+        self.pilha.append('L|') # 'L|' simboliza o fim da fita
+        
 
     # para imprimir as transicoes(debugg)
     def imprimir_transicoes(self): 
@@ -69,51 +92,41 @@ class TuringMachine:
         # Lê o primeiro símbolo antes do loop
         self.simbolo_atual = self.pilha[0]
         self.estado_atual = self.estado_inicial
-        
+
         while True:
-            # Verifica se o estado atual é de aceitação
-            if self.estado_atual in self.estados_de_aceitacao:
-                # Máquina aceitou a entrada!
-                return True
+                # Verifica se o estado atual é de aceitação
+                if self.estado_atual in self.estados_de_aceitacao:
+                    # Máquina aceitou a entrada!
+                    return True
 
-            # Verifica se há transição válida
-            if (self.estado_atual, self.simbolo_atual) not in self.transicoes:
-                # Máquina rejeitou a entrada! Não há transição válida.
-                return False
+                # Verifica se há transição válida
+                if (self.estado_atual, self.simbolo_atual) not in self.transicoes:
+                    # Máquina rejeitou a entrada! Não há transição válida.
+                    return False
 
-            # Executa a transição
-            prox_estado, novo_simbolo, direcao = self.transicoes[(self.estado_atual, self.simbolo_atual)]
-            print(f"Transição: ({self.estado_atual}, {self.simbolo_atual}) => {prox_estado}, {novo_simbolo}, {direcao}")
-            print(f"{self}")
-            print()
+                # Executa a transição
+                prox_estado, novo_simbolo, direcao = self.transicoes[(self.estado_atual, self.simbolo_atual)]
+                print(f"Transição: ({self.estado_atual}, {self.simbolo_atual}) => {prox_estado}, {novo_simbolo}, {direcao}")
+                print(f"{self}")
+                print()
             
-            self.estado_atual = prox_estado
-            if novo_simbolo != '_':
-               self.simbolo_atual = novo_simbolo
+                self.estado_atual = prox_estado # seta o estado atual como o proximo estado
+                if novo_simbolo != '_':
+                   self.simbolo_atual = novo_simbolo
 
-            if direcao == 'D':
-                if self.indice_atual_pilha + 1 < len(self.pilha):
-                   self.pilha[self.indice_atual_pilha] = self.simbolo_atual
-                   self.indice_atual_pilha = self.indice_atual_pilha + 1 # vai para direita do array
-                   self.simbolo_atual = self.pilha[self.indice_atual_pilha] # proximo simbolo da palavra
-            elif direcao == 'E':
-                if self.indice_atual_pilha - 1 >= 0:
-                    self.pilha[self.indice_atual_pilha] = self.simbolo_atual
-                    self.indice_atual_pilha = self.indice_atual_pilha - 1 # vai para esquerda do array
-                    self.simbolo_atual = self.pilha[self.indice_atual_pilha]
-
+                if direcao == 'D':
+                    if self.indice_atual_pilha + 1 < len(self.pilha):
+                       self.pilha[self.indice_atual_pilha] = self.simbolo_atual
+                       self.indice_atual_pilha = self.indice_atual_pilha + 1 # vai para direita do array
+                       self.simbolo_atual = self.pilha[self.indice_atual_pilha] # proximo simbolo da palavra
+                elif direcao == 'E':
+                    if self.indice_atual_pilha - 1 >= 0:
+                       self.pilha[self.indice_atual_pilha] = self.simbolo_atual
+                       self.indice_atual_pilha = self.indice_atual_pilha - 1 # vai para esquerda do array
+                       self.simbolo_atual = self.pilha[self.indice_atual_pilha]
+    
     def __str__(self):
         return f"Simbolo atual: {self.simbolo_atual}, Pilha: {self.pilha}"
 
 turing = TuringMachine()
-
-turing.ler_entradas_usuario()
-
-print('\nFita da maquina de turing: ')
-
-resposta = turing.ler_fita()
-
-if resposta:
-    print(f"Palavra {''.join(turing.getPalavra())} aceita!")
-else:
-    print(f"Palavra {''.join(turing.getPalavra())} rejeitada!")
+turing.main()
