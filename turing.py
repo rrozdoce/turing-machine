@@ -1,6 +1,6 @@
 # implementação da máquina de turing
-# entrada: estados_finais,estados_iniciais,estados etc...
-# entrega: 21/11/2024
+# entrada: estados, alfabeto, transicoes, estado_inicial, estados_de_aceitação 
+# entrega: 25/11/2024
 # Nome: Felipe Echeverria Vilhalva RGM: 45611
 
 class TuringMachine:
